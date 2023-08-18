@@ -36,3 +36,62 @@
     transform: rotate(360deg);
   }
 }
+
+
+.headpnav {
+  background: rgba(250, 250, 250, 0.9);
+}
+#submitBtn {
+  margin-top: 5px;
+  position: relative;
+    left: 40%;
+    margin-bottom: 10px;
+}
+
+.loginbg {
+  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: "cover";
+}
+
+.logintext {
+  text-align: center;
+}
+.soundtext {
+  color: blue;
+}
+.scribetext {
+  color: red;
+}
+
+.cardlogin {
+  
+  height: 0;
+  width: 500px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: "cover";
+}
+
+.formlogin {
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.signupbg {
+  height: 100vh;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: "cover";
+}
+
+.cardsignup {
+  height: 0;
+  width: 500px;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: "cover";
+}
+.formsignup {
+  background: rgba(0, 0, 0, 0.3);
+}
