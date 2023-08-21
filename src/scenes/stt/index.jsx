@@ -11,6 +11,9 @@ import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 import HighlightedText from "../../components/HighlightedText";
+import ProjectForm from '../../components/ProjectForm';
+
+
 
 
 
@@ -23,6 +26,17 @@ const SpeechToText = () => {
   const [audioUrl, setAudioUrl] = useState(null);
   const [isPlaying, setIsPlaying] = useState(false);
 
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [projectInfo, setProjectInfo] = useState(null); // Initialize with null or an empty object
+
+  const handleDownloadClick = () => {
+    setShowProjectForm(true);
+  };
+
+  const handleProjectFormSubmit = (newProjectInfo) => {
+    setProjectInfo(newProjectInfo); // Store the project info in state
+    setShowProjectForm(false); // Close the form after submission
+  };
 
 
   const handleAudioUpload = (event) => {
@@ -193,9 +207,12 @@ const SpeechToText = () => {
            
             <Button
                 onClick={() => {
+                  handleDownloadClick();
                   if (transcript) {
                     const blob = new Blob([transcript], { type: 'text/plain' });
                     const url = URL.createObjectURL(blob);
+
+                   
 
                     const a = document.createElement('a');
                     a.style.display = 'none';
@@ -221,6 +238,13 @@ const SpeechToText = () => {
                 <GetAppOutlinedIcon sx={{ mr: "10px" }} />
                 Download Text
           </Button>
+          {showProjectForm && (
+          <ProjectForm
+              open={showProjectForm}
+              onClose={() => setShowProjectForm(false)}
+              onSubmit={handleProjectFormSubmit}
+          />
+      )}
 
 
             

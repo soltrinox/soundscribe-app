@@ -15,8 +15,22 @@ const Topbar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const colorMode = useContext(ColorModeContext);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [suggestions, setSuggestions] = useState([]); 
 
   const [personAnchor, setPersonAnchor] = useState(null);
+
+  const itemsToFilter = [
+    { id: 1, project: "First Project" },
+    { id: 2, project: "Second Project " },
+    { id: 3, project: "Third Project" },
+    // ... (other items)
+  ];
+
+  // Filter items based on the search query
+  const filteredItems = itemsToFilter.filter(item =>
+    item.project.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
   const openPersonMenu = (event) => {
     setPersonAnchor(event.currentTarget);
@@ -25,6 +39,8 @@ const Topbar = () => {
   const closePersonMenu = () => {
     setPersonAnchor(null);
   };
+
+  
 
   return (
     <Box display="flex" justifyContent="space-between" p={2}>
@@ -35,12 +51,49 @@ const Topbar = () => {
         borderRadius="3px"
         position="relative"
       >
-        <InputBase sx={{ ml: 2, flex: 1 }} placeholder="Search" />
+        
+        <InputBase 
+          sx={{ ml: 2, flex: 1 }} 
+          placeholder="Search" 
+          value={searchQuery} 
+          onChange={(e) => {
+            setSearchQuery(e.target.value);
+            // Generate suggestions based on the input and set the suggestions state
+            const filteredSuggestions = itemsToFilter.filter((item) =>
+              item.project.toLowerCase().includes(e.target.value.toLowerCase())
+            );
+            setSuggestions(filteredSuggestions);
+          }}
+        />
         <IconButton type="button" sx={{ p: 1 }}>
           <SearchIcon />
         </IconButton>
       </Box>
 
+      {suggestions.length > 0 && (
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="flex-end"
+          position="absolute"
+          zIndex={1}
+          top="100%"
+          right={0}
+          bg="white"
+          border="1px solid #ccc"
+          borderRadius="3px"
+          boxShadow="0px 1px 2px rgba(0, 0, 0, 0.2)"
+          mt={1}
+        >
+          <Menu>
+            {suggestions.map((item) => (
+              <MenuItem key={item.id} onClick={() => setSearchQuery(item.project)}>
+                {item.project}
+              </MenuItem>
+            ))}
+          </Menu>
+        </Box>
+      )}
       {/* ICONS */}
       <Box display="flex">
         <IconButton onClick={colorMode.toggleColorMode}>
@@ -73,6 +126,7 @@ const Topbar = () => {
           </MenuItem>
           
         </Menu>
+
       </Box>
     </Box>
   );

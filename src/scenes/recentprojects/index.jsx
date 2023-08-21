@@ -1,9 +1,13 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, IconButton, Dialog, DialogActions, DialogContent, DialogTitle,  Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined';
 import Header from "../../components/Header";
-import { mockDataTeam } from "../../data/mockData";
+import TextToSpeech from "../../scenes/tts";
+import SpeechToText from "../../scenes/stt";
+
 
 
 
@@ -42,14 +46,35 @@ const RecentProjects = () => {
     },
     
     {
-      field: "status",
-      headerName: "Status",
+      field: "lastviewed",
+      headerName: "Last Viewed",
       flex: 1,
       headerAlign: "center",
       align: "center",
       
     },
   ];
+
+  const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false);
+    const [selectedComponent, setSelectedComponent] = useState("null"); // "tts" or "stt"
+
+    const handleCreateProject = () => {
+      setShowModal(true);
+    };
+
+    const handleComponentSelection = (component) => {
+      setSelectedComponent(component);
+      setShowModal(false);
+  
+       // Navigate to the selected component
+      if (component === "tts") {
+        navigate("/tts");
+      } else if (component === "stt") {
+        navigate("/stt");
+      }
+    };
+
 
   return (
       <Box m="20px">
@@ -60,6 +85,7 @@ const RecentProjects = () => {
 
           <Box>
             <Button
+              onClick={handleCreateProject}
               sx={{
                 backgroundColor: colors.blueAccent[700],
                 color: colors.grey[100],
@@ -70,6 +96,37 @@ const RecentProjects = () => {
               <AddReactionOutlinedIcon sx={{ mr: "10px" }} />
               New Project
             </Button>
+
+            <Dialog open={showModal} onClose={() => setShowModal(false)}>
+              <DialogTitle sx={{alignItems: "center", textAlign: "center"}}>Please Select One</DialogTitle>
+              <DialogContent>
+                <Typography sx={{alignItems: "center", textAlign: "center"}} >
+                  Choose a project to create:
+                </Typography>
+                <Button
+                  onClick={() => handleComponentSelection("tts")}
+                  sx={{ mt: 2, color: 'inherit' }}
+                  variant="outlined"
+                >
+                  Text-to-Speech
+                </Button>
+                <Button
+                  onClick={() => handleComponentSelection("stt")}
+                  sx={{ mt: 2, ml: 2, color: 'inherit' }}
+                  variant="outlined"
+                >
+                  Speech-to-Text
+                </Button>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setShowModal(false)} color="inherit">
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+              {showModal && selectedComponent === "tts" && <TextToSpeech />}
+              {showModal && selectedComponent === "stt" && <SpeechToText />}
           </Box>
         </Box>
       </Box>
@@ -96,6 +153,7 @@ const RecentProjects = () => {
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
             backgroundColor: colors.blueAccent[700],
+            marginBottom: "40px"
           },
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,

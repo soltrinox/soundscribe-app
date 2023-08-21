@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, useTheme, TextField, Stack } from "@mui/material";
+import { Box, Button, useTheme, TextField, Stack, Dialog, DialogTitle, DialogContent, DialogActions, } from "@mui/material";
 import VolumeUpOutlinedIcon from '@mui/icons-material/VolumeUpOutlined';
 import RestartAltOutlinedIcon from '@mui/icons-material/RestartAltOutlined';
 import GetAppOutlinedIcon from '@mui/icons-material/GetAppOutlined';
@@ -7,8 +7,9 @@ import { tokens } from "../../theme";
 import Header from "../../components/Header";
 import { useSpeechSynthesis } from 'react-speech-kit';
 import TTSHighlightedText from "../../components/TTSHighlightedText";
+import ProjectForm from '../../components/ProjectForm';
 
-const TextToSpeech = () => {
+const TextToSpeech = ({ onDownloadAudio }) => {
   const [inputText, setInputText] = useState('');
   const { speak, voices } = useSpeechSynthesis();
   const [voiceIndex, setVoiceIndex] = useState(null);
@@ -19,7 +20,8 @@ const TextToSpeech = () => {
   const [audioBlob, setAudioBlob] = useState(null);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-
+  const [showProjectForm, setShowProjectForm] = useState(false);
+  const [projectInfo, setProjectInfo] = useState(null);
 
   // const [history, setHistory] = useState([{ inputText, voiceIndex, rate }]);
   // const [step, setStep] = useState(0);
@@ -55,28 +57,55 @@ const TextToSpeech = () => {
       // Wait for speech synthesis to complete
       await speechPromise;
   
-      // Capture the generated audio data
-      const audioBlob = new Blob([utterance.audioBuffer], { type: 'audio/wav' });
+      // Calculate the duration of the audio (in seconds)
+      const audioBlob = new Blob([utterance.audioBuffer], { type: 'audio/mpeg' });
+      const sampleRate = 44100; // Common sample rate for audio
+  
+      // Calculate duration using formula: duration = size / (sampleRate * numChannels * bytesPerSample)
+      const numChannels = 2; // Stereo audio
+      const bytesPerSample = 2; // 16-bit audio
+      const audioDuration = audioBlob.size / (sampleRate * numChannels * bytesPerSample);
   
       setHighlightedIndex(0);
       setAudioBlob(audioBlob);
+  
+      // Set the calculated audio duration in seconds
+      setProjectInfo((prevInfo) => ({
+        ...prevInfo,
+        duration: audioDuration.toFixed(2), // Convert to string with 2 decimal places
+      }));
     }
   };
-  
-  
   
 
   const handleDownloadAudio = () => {
     if (audioBlob) {
+      setAudioBlob(audioBlob);
+      setShowProjectForm(true);
       const url = URL.createObjectURL(audioBlob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "generated_audio.wav"; // Set the desired audio file name
+      a.download = "tts_audio.mpeg"; // Set the desired audio file name
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      onDownloadAudio({
+        name: projectInfo.name,
+        duration: projectInfo.duration,
+        owner: projectInfo.owner,
+        created: projectInfo.created,
+        lastViewed: projectInfo.lastViewed,
+      });
     }
+  };
+
+  
+
+  const handleProjectFormSubmit = (newProjectInfo) => {
+    setProjectInfo(newProjectInfo);
+    setShowProjectForm(false);
   };
 
   const handleClear = () => {
@@ -202,7 +231,8 @@ const TextToSpeech = () => {
                 Undo
             </Button>
 
-            <Button onClick={handleDownloadAudio} sx={{
+            <Button onClick={handleDownloadAudio} 
+            sx={{
                 backgroundColor: colors.blueAccent[700],
                 color: colors.grey[100],
                 fontSize: "12px",
@@ -214,6 +244,14 @@ const TextToSpeech = () => {
           <GetAppOutlinedIcon sx={{ mr: "10px" }} />
                 Download Audio
         </Button>
+        {showProjectForm && (
+          <ProjectForm
+              open={showProjectForm}
+              onClose={() => setShowProjectForm(false)}
+              onSubmit={handleProjectFormSubmit}
+              initialProjectInfo={projectInfo}
+          />
+      )}
            
               
             <Box>

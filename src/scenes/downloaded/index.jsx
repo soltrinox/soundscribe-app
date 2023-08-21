@@ -1,21 +1,20 @@
 import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
 import Header from "../../components/Header";
-import { mockDataTeam } from "../../data/mockData";
+
+// import { mockDataTeam } from "../../data/mockData";
 
 
 
-const Downloaded = () => {
+const Downloaded = ({ projectInfo }) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const columns = [
     {
       field: "name",
       headerName: "Project Name",
+      type: "text",
       flex: 1,
       cellClassName: "name-column--cell",
     },
@@ -37,45 +36,35 @@ const Downloaded = () => {
     },
     {
       field: "created",
-      headerName: "Created",
-      type: "text",
+      headerName: "Date Created",
+      type: "date",
       headerAlign: "right",
       align: "right",
     },
     {
-      field: "status",
-      headerName: "Status",
+      field: "lastviewed",
+      headerName: "Last Viewed",
+      type: "date",
       flex: 1,
       headerAlign: "center",
       align: "right",
-      renderCell: ({ row: { access } }) => {
-        return (
-          <Box
-            width="60%"
-            m="0 auto"
-            p="5px"
-            display="flex"
-            justifyContent="center"
-            backgroundColor={
-              access === "admin"
-                ? colors.greenAccent[600]
-                : access === "manager"
-                ? colors.greenAccent[700]
-                : colors.greenAccent[700]
-            }
-            borderRadius="4px"
-          >
-            {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {access === "manager" && <SecurityOutlinedIcon />}
-            {access === "user" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
-              {access}
-            </Typography>
-          </Box>
-        );
-      },
     },
   ];
+
+  const rows = [];
+  let idCounter = 1;
+
+  // Iterate over each project in projectInfo and create rows
+  for (const projectId in projectInfo) {
+    if (projectInfo.hasOwnProperty(projectId)) {
+      const project = projectInfo[projectId];
+      rows.push({
+        id: idCounter,
+        ...project,
+      });
+      idCounter++;
+    }
+  }
 
   return (
       <Box m="20px">
@@ -111,13 +100,14 @@ const Downloaded = () => {
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
             backgroundColor: colors.blueAccent[700],
+            marginBottom: "40px"
           },
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,
           },
         }}
       >
-        <DataGrid checkboxSelection rows=""  columns={columns} />
+        <DataGrid checkboxSelection rows={rows} columns={columns} />
       </Box>
     </Box>
   );

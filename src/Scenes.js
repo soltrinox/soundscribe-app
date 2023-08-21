@@ -11,9 +11,9 @@ const Scenes = {
   RecentProjects,
   QuickRecordings,
   Downloaded,
-  User,
   TextToSpeech,
   SpeechToText,
+  User,
 };
 
 export default Scenes;

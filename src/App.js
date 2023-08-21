@@ -12,6 +12,11 @@ import { UserProvider } from './UserContext';
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const [projectInfo, setProjectInfo] = useState(null);
+
+  const handleDownloadAudio = (newProjectInfo) => {
+    setProjectInfo(newProjectInfo);
+  };
 
   const [user, setUser, unsetUser] = useState({
     id: null,
@@ -49,9 +54,9 @@ function App() {
                 {/* Scenes Routes */}
                 <Route path="/" element={<Scenes.RecentProjects />} />
                 <Route path="/quickrecordings" element={<Scenes.QuickRecordings />} />
-                <Route path="/downloaded" element={<Scenes.Downloaded />} />
+                <Route path="/downloaded" element={<Scenes.Downloaded projectInfo={projectInfo} />} />
                 <Route path="/user" element={<Scenes.User />} />
-                <Route path="/tts" element={<Scenes.TextToSpeech />} />
+                <Route path="/tts" element={<Scenes.TextToSpeech onDownloadAudio={handleDownloadAudio} />} />
                 <Route path="/stt" element={<Scenes.SpeechToText />} />
               </Routes>
             </main>

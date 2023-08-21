@@ -1,12 +1,13 @@
-import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Box, Button, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
-import DriveFolderUploadOutlinedIcon from '@mui/icons-material/DriveFolderUploadOutlined';
-import AdminPanelSettingsOutlinedIcon from "@mui/icons-material/AdminPanelSettingsOutlined";
-import LockOpenOutlinedIcon from "@mui/icons-material/LockOpenOutlined";
-import SecurityOutlinedIcon from "@mui/icons-material/SecurityOutlined";
+import AddReactionOutlinedIcon from '@mui/icons-material/AddReactionOutlined';
 import Header from "../../components/Header";
-import { mockDataTeam } from "../../data/mockData";
+import TextToSpeech from "../../scenes/tts";
+import SpeechToText from "../../scenes/stt";
+
 
 
 
@@ -44,39 +45,34 @@ const QuickRecordings = () => {
       align: "right",
     },
     {
-      field: "status",
-      headerName: "Status",
+      field: "lastviewed",
+      headerName: "Last Viewed",
       flex: 1,
       headerAlign: "center",
       align: "right",
-      renderCell: ({ row: { access } }) => {
-        return (
-          <Box
-            width="60%"
-            m="0 auto"
-            p="5px"
-            display="flex"
-            justifyContent="center"
-            backgroundColor={
-              access === "admin"
-                ? colors.greenAccent[600]
-                : access === "manager"
-                ? colors.greenAccent[700]
-                : colors.greenAccent[700]
-            }
-            borderRadius="4px"
-          >
-            {access === "admin" && <AdminPanelSettingsOutlinedIcon />}
-            {access === "manager" && <SecurityOutlinedIcon />}
-            {access === "user" && <LockOpenOutlinedIcon />}
-            <Typography color={colors.grey[100]} sx={{ ml: "5px" }}>
-              {access}
-            </Typography>
-          </Box>
-        );
-      },
+  
     },
   ];
+    const navigate = useNavigate();
+    const [showModal, setShowModal] = useState(false);
+    const [selectedComponent, setSelectedComponent] = useState("null"); // "tts" or "stt"
+
+    const handleCreateProject = () => {
+      setShowModal(true);
+    };
+
+    const handleComponentSelection = (component) => {
+      setSelectedComponent(component);
+      setShowModal(false);
+  
+       // Navigate to the selected component
+      if (component === "tts") {
+        navigate("/tts");
+      } else if (component === "stt") {
+        navigate("/stt");
+      }
+    };
+
 
   return (
       <Box m="20px">
@@ -87,6 +83,7 @@ const QuickRecordings = () => {
 
           <Box>
             <Button
+              onClick={handleCreateProject}
               sx={{
                 backgroundColor: colors.blueAccent[700],
                 color: colors.grey[100],
@@ -94,10 +91,41 @@ const QuickRecordings = () => {
                 padding: "10px 20px",
               }}
             >
-              <DriveFolderUploadOutlinedIcon sx={{ mr: "10px" }} />
-              Upload File
+              <AddReactionOutlinedIcon sx={{ mr: "10px" }} />
+              Create Project
             </Button>
           </Box>
+              
+            <Dialog open={showModal} onClose={() => setShowModal(false)}>
+              <DialogTitle sx={{alignItems: "center", textAlign: "center"}}>Please Select One</DialogTitle>
+              <DialogContent>
+                <Typography sx={{alignItems: "center", textAlign: "center"}} >
+                  Choose a project to create:
+                </Typography>
+                <Button
+                  onClick={() => handleComponentSelection("tts")}
+                  sx={{ mt: 2, color: 'inherit' }}
+                  variant="outlined"
+                >
+                  Text-to-Speech
+                </Button>
+                <Button
+                  onClick={() => handleComponentSelection("stt")}
+                  sx={{ mt: 2, ml: 2, color: 'inherit' }}
+                  variant="outlined"
+                >
+                  Speech-to-Text
+                </Button>
+              </DialogContent>
+              <DialogActions>
+                <Button onClick={() => setShowModal(false)} color="inherit">
+                  Cancel
+                </Button>
+              </DialogActions>
+            </Dialog>
+
+          {showModal && selectedComponent === "tts" && <TextToSpeech />}
+          {showModal && selectedComponent === "stt" && <SpeechToText />}
         </Box>
       </Box>
       <Box
@@ -123,6 +151,7 @@ const QuickRecordings = () => {
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
             backgroundColor: colors.blueAccent[700],
+            marginBottom: "40px"
           },
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,

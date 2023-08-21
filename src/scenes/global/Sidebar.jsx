@@ -84,6 +84,7 @@ const Sidebar = () => {
           background: `${colors.primary[400]} !important`,
           borderRadius: "5px",
           marginTop: "15px",
+          marginLeft: "10px"
         },
         "& .pro-icon-wrapper": {
           backgroundColor: "transparent !important",

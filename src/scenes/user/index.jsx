@@ -2,7 +2,7 @@ import { Box, Button, IconButton, Typography, useTheme } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import Header from "../../components/Header";
-import { mockDataTeam } from "../../data/mockData";
+
 
 
 
@@ -40,8 +40,8 @@ const User = () => {
       align: "right",
     },
     {
-      field: "status",
-      headerName: "Status",
+      field: "lastviewed",
+      headerName: "Last Viewed",
       flex: 1,
       headerAlign: "center",
       align: "right",
@@ -63,9 +63,11 @@ const User = () => {
         sx={{
           "& .MuiDataGrid-root": {
             border: "none",
+            
           },
           "& .MuiDataGrid-cell": {
             borderBottom: "none",
+           
           },
           "& .name-column--cell": {
             color: colors.greenAccent[300],
@@ -80,13 +82,14 @@ const User = () => {
           "& .MuiDataGrid-footerContainer": {
             borderTop: "none",
             backgroundColor: colors.blueAccent[700],
+            marginBottom: "40px"
           },
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,
           },
         }}
       >
-        <DataGrid checkboxSelection rows={mockDataTeam}  columns={columns} />
+        <DataGrid checkboxSelection rows=""  columns={columns} />
       </Box>
     </Box>
   );
