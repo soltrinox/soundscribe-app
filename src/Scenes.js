@@ -8,12 +8,13 @@ import TextToSpeech from "./scenes/tts";
 import SpeechToText from "./scenes/stt";
 
 const Scenes = {
+  User,
   RecentProjects,
   QuickRecordings,
   Downloaded,
   TextToSpeech,
   SpeechToText,
-  User,
+  
 };
 
 export default Scenes;

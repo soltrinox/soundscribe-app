@@ -41,7 +41,7 @@ const ProjectForm = ({ open, onClose, onSubmit, initialProjectInfo }) => {
         <TextField
           label="Duration"
           name="duration"
-          value={projectInfo.duration}
+          value={projectInfo.duration} 
           onChange={handleInputChange}
           fullWidth
           margin="normal"

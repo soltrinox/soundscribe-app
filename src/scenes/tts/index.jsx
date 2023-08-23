@@ -42,55 +42,42 @@ const TextToSpeech = ({ onDownloadAudio }) => {
     if (inputText.length > 0) {
       setIsSpeaking(true);
   
+      const words = inputText.split(" ");
+      const estimatedDuration = (words.length / rate).toFixed(2);
+  
       const utterance = new SpeechSynthesisUtterance(inputText);
       utterance.rate = rate;
       utterance.voice = voices[voiceIndex];
   
-      // Create a Promise to track when speech synthesis is completed
       const speechPromise = new Promise((resolve) => {
         utterance.onend = resolve;
       });
   
-      // Start speech synthesis
       speechSynthesis.speak(utterance);
-  
-      // Wait for speech synthesis to complete
       await speechPromise;
   
-      // Calculate the duration of the audio (in seconds)
-      const audioBlob = new Blob([utterance.audioBuffer], { type: 'audio/mpeg' });
-      const sampleRate = 44100; // Common sample rate for audio
-  
-      // Calculate duration using formula: duration = size / (sampleRate * numChannels * bytesPerSample)
-      const numChannels = 2; // Stereo audio
-      const bytesPerSample = 2; // 16-bit audio
-      const audioDuration = audioBlob.size / (sampleRate * numChannels * bytesPerSample);
-  
       setHighlightedIndex(0);
-      setAudioBlob(audioBlob);
   
-      // Set the calculated audio duration in seconds
+      setAudioBlob(new Blob([utterance.audioBuffer], { type: 'audio/mpeg' }));
       setProjectInfo((prevInfo) => ({
         ...prevInfo,
-        duration: audioDuration.toFixed(2), // Convert to string with 2 decimal places
+        duration: estimatedDuration,
       }));
     }
   };
   
-
   const handleDownloadAudio = () => {
     if (audioBlob) {
-      setAudioBlob(audioBlob);
       setShowProjectForm(true);
       const url = URL.createObjectURL(audioBlob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "tts_audio.mpeg"; // Set the desired audio file name
+      a.download = "tts_audio.mpeg";
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
-
+  
       onDownloadAudio({
         name: projectInfo.name,
         duration: projectInfo.duration,
@@ -100,6 +87,7 @@ const TextToSpeech = ({ onDownloadAudio }) => {
       });
     }
   };
+  
 
   
 

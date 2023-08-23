@@ -147,7 +147,7 @@ const Sidebar = () => {
             </Typography>
             <Item
               title="Recent Projects"
-              to="/"
+              to="/recentprojects"
               icon={<HomeOutlinedIcon />}
               selected={selected}
               setSelected={setSelected}
@@ -195,7 +195,7 @@ const Sidebar = () => {
             <Typography
               variant="h6"
               color={colors.grey[300]}
-              sx={{ m: "70px 0 5px 20px" }}
+              sx={{ m: "80px 0 5px 20px" }}
             >
             </Typography>
             <Item

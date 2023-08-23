@@ -131,7 +131,7 @@ const RecentProjects = () => {
         </Box>
       </Box>
       <Box
-        m="40px 0 0 0"
+        m="20px 0 0 0"
         height="75vh"
         sx={{
           "& .MuiDataGrid-root": {
