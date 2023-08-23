@@ -1,13 +1,14 @@
 import { useState } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
-import Sidebar from "./scenes/global/Sidebar";
-import Topbar from "./scenes/global/Topbar";
-import Pages from "./Pages"; // Import the Pages component
-import Scenes from "./Scenes"; // Import the Scenes component
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { CssBaseline, ThemeProvider } from "@mui/material";
 import { ColorModeContext, useMode } from "./theme";
 import UserContext from './UserContext';
 import { UserProvider } from './UserContext';
+import Sidebar from "./scenes/global/Sidebar";
+import Topbar from "./scenes/global/Topbar";
+
+import Pages from "./Pages"; // Import the Pages component
+import Scenes from "./Scenes"; // Import the Scenes component
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -50,12 +51,15 @@ function App() {
                 <Route path="/login" element={<Pages.Login />} />
                 <Route path="/signup" element={<Pages.SignUp />} />
                 <Route path="/logout" element={<Pages.Logout />} />
+                
+                {/* Redirect to login by default */}
+                <Route path="/" element={<Navigate to="/login" />} />
 
                 {/* Scenes Routes */}
-                <Route path="/" element={<Scenes.RecentProjects />} />
+                <Route path="/user" element={<Scenes.User />} />
+                <Route path="/recentprojects" element={<Scenes.RecentProjects />} />
                 <Route path="/quickrecordings" element={<Scenes.QuickRecordings />} />
                 <Route path="/downloaded" element={<Scenes.Downloaded projectInfo={projectInfo} />} />
-                <Route path="/user" element={<Scenes.User />} />
                 <Route path="/tts" element={<Scenes.TextToSpeech onDownloadAudio={handleDownloadAudio} />} />
                 <Route path="/stt" element={<Scenes.SpeechToText />} />
               </Routes>
