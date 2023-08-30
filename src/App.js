@@ -13,7 +13,7 @@ import Scenes from "./Scenes"; // Import the Scenes component
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
-  const [projectInfo, setProjectInfo] = useState(null);
+  const [projectInfo, setProjectInfo] = useState({});
 
   const handleDownloadAudio = (newProjectInfo) => {
     setProjectInfo(newProjectInfo);

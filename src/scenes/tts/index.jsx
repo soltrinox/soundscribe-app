@@ -16,7 +16,7 @@ const TextToSpeech = ({ onDownloadAudio }) => {
   const [rate, setRate] = useState(0.1);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
-  const [highlightSpeed, setHighlightSpeed] = useState(.4);
+  const [highlightSpeed, setHighlightSpeed] = useState(.35);
   const [audioBlob, setAudioBlob] = useState(null);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -42,42 +42,61 @@ const TextToSpeech = ({ onDownloadAudio }) => {
     if (inputText.length > 0) {
       setIsSpeaking(true);
   
-      const words = inputText.split(" ");
-      const estimatedDuration = (words.length / rate).toFixed(2);
-  
       const utterance = new SpeechSynthesisUtterance(inputText);
       utterance.rate = rate;
       utterance.voice = voices[voiceIndex];
   
+      // Create a Promise to track when speech synthesis is completed
       const speechPromise = new Promise((resolve) => {
         utterance.onend = resolve;
       });
   
+      // Start speech synthesis
       speechSynthesis.speak(utterance);
+  
+      // Wait for speech synthesis to complete
       await speechPromise;
   
-      setHighlightedIndex(0);
+      // Calculate the duration of the audio (in seconds)
+      const audioBlob = new Blob([utterance.audioBuffer], { type: 'audio/mpeg' });
+      const sampleRate = 44100; // Common sample rate for audio
   
-      setAudioBlob(new Blob([utterance.audioBuffer], { type: 'audio/mpeg' }));
+      // Calculate duration using formula: duration = size / (sampleRate * numChannels * bytesPerSample)
+      const numChannels = 2; // Stereo audio
+      const bytesPerSample = 2; // 16-bit audio
+      const audioDuration = audioBlob.size / (sampleRate * numChannels * bytesPerSample);
+  
+      setHighlightedIndex(0);
+      setAudioBlob(audioBlob);
+  
+      // Set the calculated audio duration in seconds
       setProjectInfo((prevInfo) => ({
         ...prevInfo,
-        duration: estimatedDuration,
+        duration: audioDuration.toFixed(2), // Convert to string with 2 decimal places
       }));
     }
   };
   
+
   const handleDownloadAudio = () => {
     if (audioBlob) {
+      setAudioBlob(audioBlob);
       setShowProjectForm(true);
       const url = URL.createObjectURL(audioBlob);
       const a = document.createElement("a");
       a.href = url;
-      a.download = "tts_audio.mpeg";
+      a.download = "tts_audio.mpeg"; // Set the desired audio file name
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
+
+      setProjectInfo((prevInfo) => ({
+        ...prevInfo,
+        duration: projectInfo.duration, // Update the duration value here
+      }));
   
+
       onDownloadAudio({
         name: projectInfo.name,
         duration: projectInfo.duration,
@@ -87,7 +106,6 @@ const TextToSpeech = ({ onDownloadAudio }) => {
       });
     }
   };
-  
 
   
 
@@ -125,30 +143,6 @@ const TextToSpeech = ({ onDownloadAudio }) => {
     }
   }, [isSpeaking, inputText, rate, highlightSpeed]);
     
-  // const handleUndo = () => {
-  //   if (step > 0) {
-  //     const previousStep = history[step - 1];
-  //     setInputText(previousStep.inputText);
-  //     setVoiceIndex(previousStep.voiceIndex);
-  //     setRate(previousStep.rate);
-  //     setStep(step - 1);
-  //   }
-  // };
-  
-  // const handleRedo = () => {
-  //   if (step < history.length - 1) {
-  //     const nextStep = history[step + 1];
-  //     setInputText(nextStep.inputText);
-  //     setVoiceIndex(nextStep.voiceIndex);
-  //     setRate(nextStep.rate);
-  //     setStep(step + 1);
-  //   }
-  // };
-  
-  // const handleInputChange = (e) => {
-  //   const newText = e.target.value;
-  //   setInputText(newText);
-  // };
   
   return (
       <Box m="20px">

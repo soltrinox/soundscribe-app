@@ -34,6 +34,7 @@ const SpeechToText = () => {
   };
 
   const handleProjectFormSubmit = (newProjectInfo) => {
+
     setProjectInfo(newProjectInfo); // Store the project info in state
     setShowProjectForm(false); // Close the form after submission
   };

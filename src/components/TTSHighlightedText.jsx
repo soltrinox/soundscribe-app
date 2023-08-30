@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { Box, Button, useTheme, TextField, Stack } from "@mui/material";
+import {  useTheme } from "@mui/material";
 import { tokens } from "../theme";
 
 const TTSHighlightedText = ({ text, highlightedIndex }) => {
   const [inputValue, setInputValue] = useState('');
   const [words, setWords] = useState([]);
   const highlightStyle = {
-    backgroundImage: `linear-gradient(to right, purple, skyblue)`,
+    backgroundImage: `linear-gradient(to right, skyblue, blue)`,
     padding: "2px",
     borderRadius: "3px",
-    display: "inline-block", // Maintain inline layout
+    display: "inline-block", 
   };
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);

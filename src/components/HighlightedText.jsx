@@ -1,9 +1,9 @@
 import React from "react";
 import Highlighter from "react-highlight-words";
 
-const HighlightedText = ({ text, isSpeaking }) => {
+const HighlightedText = ({ text }) => {
   const highlightStyle = {
-    backgroundImage: `linear-gradient(to right, purple, skyblue)`, // Highlight color
+    backgroundImage: `linear-gradient(to right, skyblue, blue)`, // Highlight color
     padding: "2px 4px",
     borderRadius: "4px",
     display: "inline-block",

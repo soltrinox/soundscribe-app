@@ -1,99 +1,82 @@
-import React, {useState, useEffect, useContext} from 'react'
-import {  Form, Button, Card, Row, Col } from 'react-bootstrap'
-import { useNavigate, Navigate, Link, Redirect, useHistory } from 'react-router-dom'
-import UserContext from '../UserContext'
-import Swal from 'sweetalert2'
-import '../App.css'
-import background from '../media/bg1.jpg'
+import React, { useState, useEffect, useContext } from 'react';
+import { Form, Button, Card, Row, Col } from 'react-bootstrap';
+import { useNavigate, Navigate, Link } from 'react-router-dom';
+import UserContext from '../UserContext';
+import Swal from 'sweetalert2';
+import axios from 'axios'; // Import axios library
+import '../App.css';
+import background from '../media/bg1.jpg';
 
+export default function Login() {
+    const { user, setUser } = useContext(UserContext);
 
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isActive, setIsActive] = useState(false);
 
+    const navigate = useNavigate();
 
-export default function Login(){
-    // const history = useHistory()
-    const {user, setUser, unsetUser} = useContext(UserContext)
+    const authenticate = (event) => {
+        event.preventDefault();
 
-    const [email, setEmail] = useState('')
-    const [password, setPassword] = useState('')
-    // const [willRedirect, setWillRedirect] =useState(false)
-    // const [isLoading, setIsLoading] = useState(false)
-
-    const navigate = useNavigate()
-
-    const [isActive, setIsActive] = useState(false)
-
-
-    function authenticate(event){
-        event.preventDefault()
-
-        // setIsLoading(true)
-
-        fetch(`${process.env.REACT_APP_API_URL}/users/login`, {
-            method: 'POST',
+        axios.post(`${process.env.REACT_APP_API_URL}/users/login`, {
+            email: email,
+            password: password
+        }, {
             headers: {
-                'Content-Type': 'application/json',            
-            },
-            body: JSON.stringify({
-                email: email,
-                password: password
-            })
-        }).then(response => response.json())
-          .then(result => {
-            if(result.accessToken !== "undefined"){
-                localStorage.setItem('accessToken', result.accessToken)
-                // retrieveUser(result.accessToken)
+                'Content-Type': 'application/json'
+            }
+        }).then(response => {
+            const result = response.data;
+            if (result.accessToken !== "undefined") {
+                localStorage.setItem('accessToken', result.accessToken);
+
                 setUser({
-                    accessToken: result.accessToken 
-                })
+                    accessToken: result.accessToken
+                });
 
                 Swal.fire({
                     title: 'Login Successful!',
                     icon: 'success',
                     text: 'Welcome to Soundscribe'
-                })
-           
-                fetch(`${process.env.REACT_APP_API_URL}/users/details`, {
+                });
+
+                axios.get(`${process.env.REACT_APP_API_URL}/users/details`, {
                     headers: {
                         Authorization: `Bearer ${result.accessToken}`
                     }
-                })
-                .then(response => response.json())
-                .then(result => {
-                    if(result.user){
-                        localStorage.setItem('regularUser', true)
+                }).then(response => {
+                    const result = response.data;
+                    if (result.user) {
+                        localStorage.setItem('regularUser', true);
 
                         setUser({
                             accessToken: null,
                             firstName: result.firstName,
                             regularUser: true
-                        })
-                        // navigate('/user')
+                        });
                     }
-                    
-                })
+                }).catch(error => {
+                    console.error("An error occurred:", error);
+                });
 
-            }else {
+            } else {
                 Swal.fire({
                     title: 'Authentication Failed',
                     icon: 'error',
                     text: 'Something went wrong, please check your details'
-                })
+                });
             }
-            setEmail('')
-            setPassword('')
-         
+            setEmail('');
+            setPassword('');
+        }).catch(error => {
+            console.error("An error occurred:", error);
+        });
+    };
 
-          })
-    }
-    
     useEffect(() => {
-		if((email !== '' && password !== '')) {
-			// Enables the submit button if the form data has been verified
-			setIsActive(true)
-		} else {
-			setIsActive(false)
-		}
-	}, [email, password])
+        setIsActive(email !== '' && password !== '');
+    }, [email, password]);
 
     return(
        
